@@ -1,0 +1,50 @@
+<!------------------------------------------
+		@file base_error.html
+		@lastmod 1/11/12
+------------------------------------------->
+<!-- 
+	estende a base que contem o menu 
+-->
+{% extends 'hostnames/bootstrap.html' %}
+
+
+<!-- 
+	define o título da página
+-->
+{% block title %}
+    ERROR
+{% endblock %}
+
+<!--
+	inicia bloco de conteudo bootstrap
+-->
+{% block bootstrap3_content %}
+
+<!--
+	define navbar padrão para todos os templates
+-->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+		<!--
+			seta o icone de brand
+		-->
+            <a class="navbar-brand" href="#">Hostnames Provider</a>
+        </div>
+    </div>
+</nav>
+<!--
+	define o conteúdo da página a ser exibida
+-->
+<div class="container">
+	{% block main %}
+	{% endblock %}
+</div>
+
+{% endblock %}

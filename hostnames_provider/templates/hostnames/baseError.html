@@ -1,0 +1,43 @@
+<!------------------------------------------
+		@file baseError.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!-- 
+	estende o bootstrap necessário para a página
+-->
+{% extends 'hostnames/bootstrap.html' %}
+
+<!-- 
+	início do bloco de conteúdo bootstrap 
+-->
+{% block bootstrap3_content %}
+
+<div class='container'>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+	    <div class="navbar-header">
+	        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Web Dev Academy</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+            </div>
+        </div>
+    </nav>
+ 
+    <br><br>
+	<!-- 
+	resgata o erro através de uma view e o apresenta na tela 
+	-->
+	<div id="main" class="container-fluid">
+        	<h3 class="page-header" align='center'>ERRO PADRAO!</h3>
+    	</div>
+    <hr>   
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+<!------------------------------------------
+		@file base.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!-- 
+	estende a base que contem o menu 
+-->
+{% extends 'hostnames/bootstrap.html' %}
+
+<!--
+	inicia bloco de conteudo bootstrap
+-->
+{% block bootstrap3_content %}
+
+<!--
+	define navbar padrão para todos os templates
+-->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+			<!--
+				seta o icone de brand
+			-->
+            <a class="navbar-brand" href="#">Hostnames Provider</a>
+        </div>
+		<!--
+			define navbar interna contendo menu da esquerda e da direita
+		-->
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-left">
+            {% block navbar_left_menu %}
+            {% endblock %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            {% block navbar_right_menu %}
+            {% endblock %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--
+	define o conteúdo da página a ser exibida
+-->
+<div class="container">
+	{% block main %}
+	{% endblock %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'hostnames/base.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block navbar_left_menu %}
+    <li><a href="/">Início</a></li>
+{% endblock %}
+
+{% block main %}
+
+{% if form.errors %}
+    <p>Usuário ou senha inválida. Tente novamente.</p>
+{% endif %}
+
+    <form action="{% url 'login' %}" method="post">{% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="hostname">Usuário:</label>
+                {{ form.username }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-4">
+                 <label for="mac">Senha:</label>
+                     {{ form.password }}
+            </div>
+        </div>
+        <hr />
+        <div id="actions" class="row">
+                <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

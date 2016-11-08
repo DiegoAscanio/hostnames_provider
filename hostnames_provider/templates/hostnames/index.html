@@ -1,0 +1,83 @@
+<!------------------------------------------
+		@file index.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!DOCTYPE html>
+
+<!-- 
+	estende a base padrao 
+-->
+{% extends 'hostnames/base.html' %}
+
+<!-- 
+	carrega o bootstrap 
+-->
+{% load bootstrap3 %}
+
+<!-- 
+	define o título da página 
+-->
+{% block title %}
+    Adicionar Item
+{% endblock %}
+
+<!-- 
+	define o conteúdo da página com bootstrap 
+-->
+{% block bootstrap3_content %}
+
+    <!-- 
+		Jumbotron principal para mostrar uma primeira mensagem ou ação 
+	-->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Hostnames Provider</h1>
+        <p>Seja bem vindo ao Hostnames Provider. A função dessa aplicação é ...</p>
+        <p><a class="btn btn-primary btn-lg" href="/accounts/login" role="button">Entrar &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- 
+		Linha de colunas contendo o conteúdo do jumbotron 
+	  -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Sobre</h2> 
+          <p>O Hostnames Provider é ...</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Ajuda</h2>
+          <p>Precisa de ajuda? Clique no botão abaixo!</p>
+          <p><a class="btn btn-default" href="/ajuda" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Contato</h2>
+          <p>Para entrar em contato acesse o link abaixo.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+	  <!-- 
+	  	define o footer 
+	  -->
+      <footer>
+        <p>&copy; 2016 Hostnames Provider, CEFET-MG Campus XI.</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+{% endblock %}
+

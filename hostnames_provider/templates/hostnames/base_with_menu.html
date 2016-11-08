@@ -1,0 +1,27 @@
+<!------------------------------------------
+		@file base_with_menu.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!--
+	estende a base padrao
+-->
+{% extends 'hostnames/base.html' %}
+
+<!--
+	define o conteudo da navbar esquerda
+-->
+{% block navbar_left_menu %}
+                <li><a href="/create">Adicionar</a></li>
+                <li><a href="/list">Listar</a></li>
+{% endblock %}
+
+<!--
+	define o conteudo da navbar direita
+-->
+{% block navbar_right_menu %}
+                <li><a href="/opcoes">Opções</a></li>
+                <li><a href="/perfil">Perfil</a></li>
+                <li><a href="/ajuda">Ajuda</a></li>
+		<li><a style='padding-top:7px;padding-bottom:7px' href="/logout"><button type="button" class="btn btn-success">Sair</button></a></li>
+{% endblock %}

@@ -1,0 +1,93 @@
+<!------------------------------------------
+		@file retrieve.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!-- 
+	estende a base que contem o menu 
+-->
+{% extends 'hostnames/base_with_menu.html' %}
+
+<!-- 
+	carrega o bootstrap 
+-->
+{% load bootstrap3 %}
+
+<!-- 
+	define o título da página 
+-->
+{% block title %}
+    Itens
+{% endblock %}
+
+<!--
+	início do bloco de conteúdo principal
+-->
+{% block main %}
+
+
+	<div id="main" class="container-fluid">
+		<h3 class="page-header">Visualizar Host</h3>
+ 	</div>
+
+ 	<div class="row">
+    	<div class="col-md-4">
+    	<p><strong>Hostname</strong></p>
+    	<p>{{host.hostname}}</p>
+  	</div>
+  	
+	<div class="col-md-4">
+    	<p><strong>Endereço Mac</strong></p>
+    	<p>{{host.mac_address}}</p>
+  	</div>
+
+  	<div class="col-md-4">
+    	<p><strong>Endereço IP</strong></p>
+    	<p>{{host.ip_address}}</p>
+  	</div>
+
+	<hr />
+
+	<!--
+		espaço para as ações possíveis sobre cada host listado
+	-->
+	<div id="actions" class="row">
+ 		<div class="col-md-12">
+  			<a href="/update?ip={{host.ip_address}}" class="btn btn-primary">Editar</a>
+  			<a href="/list" class="btn btn-default">Fechar</a>
+  			<a href="#" onclick="pegaId('{{host.id}}')" class="btn btn-default" data-toggle="modal" data-target="#delete-modal">Excluir</a>
+ 		</div>
+	</div>
+
+<!-- Modal -->
+	<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+  		<div class="modal-dialog" role="document">
+    		<div class="modal-content">
+      			<div class="modal-header">
+
+       				<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="modalLabel">Excluir Item</h4>
+      			</div>
+      			
+				<div class="modal-body">
+        			Deseja realmente excluir este item?
+      			</div>
+
+      			<div class="modal-footer">
+					<form action="/delete/" method="post">{% csrf_token %}
+						<input type='hidden' name='id' id='idForm' value=''>
+						<button type="submit" class="btn btn-primary">Sim</button>
+	 					<button type="button" class="btn btn-default" data-dismiss="modal">Não</button>
+					</form>
+      			</div>
+    		</div>
+  		</div>
+	</div> <!-- /.modal -->
+
+<script>
+	function pegaId(id){
+		var idForm = document.getElementById('idForm').value = id;
+	}
+</script>
+
+{% endblock %}

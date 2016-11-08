@@ -1,0 +1,230 @@
+<!------------------------------------------
+		@file list.html
+		@lastmod 1/11/12
+------------------------------------------->
+<!-- 
+	estende a base que contem o menu 
+-->
+{% extends 'hostnames/base_with_menu.html' %}
+
+<!-- 
+	carrega o bootstrap 
+-->
+{% load bootstrap3 %}
+
+<!-- 
+	define o título da página 
+-->
+{% block title %}
+    Itens
+{% endblock %}
+
+<!-- 
+	início do bloco de conteúdo principal 
+-->
+{% block main %}
+
+  <div id="main" class="container-fluid">
+     <div id="top" class="row">
+    <div class="col-md-1">
+        <h2>Itens</h2>
+    </div>
+
+	<!-- 
+		define o form de pesquisa para filtro de conteúdo 
+	-->
+    <div class="col-md-5">
+      <form id="pesquisar" action="/pesquisar" method="get">
+        <div class="input-group h2">
+            <input id="pesquisa" name="pesquisa" class="form-control" id="search" type="text" placeholder="Pesquisar Itens" />
+            <span class="input-group-btn">
+                <button id="pesquisar" class="btn btn-primary" type="submit">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </span>
+        </div>
+      </form>
+    </div>
+
+	<!-- 
+		botao que redireciona o usuário para o create  
+	-->
+    <div class="col-md-2">
+			<a href="/download" class="btn btn-primary pull-right h2">Baixar .csv</a>
+    </div>
+    <div class="col-md-2">
+        <a href="/create" class="btn btn-primary pull-right h2">Novo Item</a>
+    </div>
+    <div class="col-md-2">
+			<a class="btn btn-primary btn-danger pull-right h2"  href="#" onclick="deletaHosts()" data-toggle="modal" data-target="#delete-modal-hosts">Excluir Itens</a>
+		</div>
+ 
+     <hr />
+     <div id="list" class="row">
+	<!-- 
+		tabela responsiva para mostrar o conteúdo recuperado 
+	-->
+    <div class="table-responsive col-md-12">
+        <table class="table table-striped" cellspacing="0" cellpadding="0">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" onclick="switchCheckbox(this)" name="switchCheckbox"></th>
+                    <th>Hostname</th>
+                    <th>Endereço Mac</th>
+                    <th>Endereço IP</th>
+                    <th class="actions">Ações</th>
+                 </tr>
+            </thead>
+            <tbody>
+		{% for i in hosts %}
+                <tr>
+                    <td><input type="checkbox" name="checkbox" value="{{ i.id }}"></td>
+                    <td> {{ i.hostname }} </td>
+                    <td> {{ i.mac_address }} </td>
+                    <td> {{ i.ip_address }} </td>
+                    <td class="actions">
+                        <a class="btn btn-success btn-xs" href="/retrieve/?ip={{i.ip_address}}">Visualizar</a>
+                        <a class="btn btn-warning btn-xs" href="/update/?ip={{i.ip_address}}">Editar</a>
+                        <a class="btn btn-danger btn-xs"  href="#" onclick="pegaId('{{i.id}}')" data-toggle="modal" data-target="#delete-modal">Excluir</a>
+                    </td>
+                </tr>
+		{% endfor %}
+            </tbody>
+         </table>
+ 
+     </div>
+ </div> <!-- /#list -->
+ 
+	<div id="bottom" class="row">
+    		<div class="col-md-6">
+        		{% if hosts.has_other_pages %}
+  				<ul class="pagination">
+    					{% if hosts.has_previous %}
+      						<li><a href="?pesquisa={{pesquisa}}&page={{ hosts.previous_page_number }}">&laquo;</a></li>
+    					{% else %}
+      						<li class="disabled"><span>&laquo;</span></li>
+    				{% endif %}
+    				{% for i in hosts.paginator.page_range %}
+      					{% if hosts.number == i %}
+        					<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      					{% else %}
+						<li><a href="?pesquisa={{pesquisa}}&page={{ i }}">{{ i }}</a></li>
+      					{% endif %}
+				{% endfor %}
+    				{% if hosts.has_next %}
+      					<li><a href="?pesquisa={{pesquisa}}&page={{ hosts.next_page_number }}">&raquo;</a></li>
+    				{% else %}
+      					<li class="disabled"><span>&raquo;</span></li>
+    				{% endif %}
+  			</ul>
+		{% endif %}
+
+    		</div>
+	</div> <!-- /#bottom -->
+</div>  <!-- /#main -->
+
+<!-- Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Excluir Item</h4>
+            </div>
+            <div class="modal-body">Deseja realmente excluir este item? </div>
+            <div class="modal-footer">
+                <form action="/delete/" id='deleteForm' method="post">{% csrf_token %}
+		<input type='hidden' name='id' id='idForm' value='' />
+                <button type="submit" class="btn btn-primary">Sim</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">N&atilde;o</button>
+		</form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="delete-modal-hosts" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modalLabel">Excluir Hosts</h4>
+            		</div>
+            		<div class="modal-body" id="modal-body-hosts">Deseja realmente excluir estes hosts?</div>
+            			<div class="modal-footer" id="modal-footer-hosts">
+                			<form action="/delete/" id='deleteForm' method="post">{% csrf_token %}
+						<input type='hidden' name='id' id='idHosts' value=''>
+						<button type="submit" class="btn btn-primary">Sim</button>
+		        			<button type="button" class="btn btn-default" data-dismiss="modal">N&atilde;o</button>
+					</form>
+            			</div>
+			</div>
+    		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+<script type="text/javascript">
+	function pegaId(id){
+		var idForm = document.getElementById('idForm').value = id;
+	}
+	function switchCheckbox(ele){
+		var checkboxes = document.getElementsByName('checkbox');
+	     	if (ele.checked) {
+			for (var i = 0; i < checkboxes.length; i++) {
+				checkboxes[i].checked = true;
+			}
+	     	} else {
+		 	for (var i = 0; i < checkboxes.length; i++) {
+	 			checkboxes[i].checked = false;
+		 	}	
+     		}
+	}
+	function deletaHosts(){
+		var hosts = pegaCheckbox();
+		var modalBody = document.getElementById('modal-body-hosts');
+		var modalFooter = document.getElementById('modal-footer-hosts');
+		alert(hosts)
+		if(hosts == null){
+			modalBody.innerHTML = "Nenhum Host Selecionado";
+			modalFooter.innerHTML = "";
+		} else {
+			modalBody.innerHTML = "Deseja realmente excluir estes hosts?";
+			modalFooter.innerHTML = "<form action='/delete/' id='deleteForm' method='post'>{% csrf_token %}"+
+						"<input type='hidden' name='id' id='idHosts' value=''>"+
+						"<button type='submit' class='btn btn-primary'>Sim</button>"+
+		        			"<button type='button' class='btn btn-default' data-dismiss='modal'>N&atilde;o</button>"+
+					"</form>";
+		}
+		var idHost = document.getElementById('idHosts').value = hosts;
+	}
+	function pegaCheckbox() {
+		var checkboxes = document.getElementsByName("checkbox");
+	  	var checkboxesChecked = [];
+	  	// loop over them all
+	  	for (var i=0; i<checkboxes.length; i++) {
+	     		// And stick the checked ones onto an array...
+	     		if (checkboxes[i].checked) {
+				checkboxesChecked.push(checkboxes[i].value);
+				alert(checkboxes.value)
+	     		}
+  		}
+	  	// Return the array if it is non-empty, or null
+	  	return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+	}
+</script>
+
+<!--
+<script>
+	$(document).ready(function(){
+  		$('#pesquisar').click( function() {
+			var bla = $('#pesquisa').val();
+			alert(bla);
+		});
+	});
+
+</script>
+-->
+{% endblock %}

@@ -1,0 +1,82 @@
+<!------------------------------------------
+		@file create.html
+		@lastmod 1/11/12
+------------------------------------------->
+<!--
+	estende a base que contem o menu
+-->
+{% extends 'hostnames/base_with_menu.html' %}
+
+<!--
+	carrega o bootstrap
+-->
+{% load bootstrap3 %}
+
+<!--
+	seta o titulo da página
+-->
+{% block title %}
+    Adicionar Item
+{% endblock %}
+
+<!--
+	início do bloco de conteúdo principal
+-->
+{% block main %}
+	<!--
+		define o modelo para a entrada de dados (adicionar host)
+	-->
+    <div id="main" class="container-fluid">
+        <h3 class="page-header">Adicionar Host</h3>
+    </div>
+
+    <form action="/create/" method="post">{% csrf_token %}
+        <div class="row">
+            <div class="form-group col-md-4">
+                <label for="hostname">Hostname</label>
+                <input type="text" class="form-control" id="hostname" name ="hostname">
+            </div>
+            <div class="form-group col-md-4">
+                 <label for="mac">Endereço Mac</label>
+                 <input type="text" class="form-control" id="mac" name ="mac">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="ip">Endereço IP</label>
+                <input type="text" class="form-control" id="ip" name ="ip">
+            </div>
+        </div>
+        <hr/>
+		<!--
+			configura a parte de enviar
+		-->
+        <div id="actions" class="row">
+                <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a href="javascript:history.back()" class="btn btn-default">Cancelar</a>
+            </div>
+        </div>
+    </form>
+    <hr>
+	<!--
+		define o modelo de entrada do arquivo .csv
+	-->
+    <form enctype="multipart/form-data" action="/upload/" method="post">{% csrf_token %}
+        <div class="form-group bootstrap3-required">
+            <label class="control-label" for="file">Arquivo .csv</label>
+            <div class="row bootstrap3-multi-input">
+                <div class="col-xs-12">
+                    <input class="" id="file" name="file" title="file" type="file">
+                </div>
+            </div>
+        </div>
+		<!--
+			configura a parte de enviar
+		-->
+        <div id="actions" class="row">
+                <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a href="javascript:history.back()" class="btn btn-default">Cancelar</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

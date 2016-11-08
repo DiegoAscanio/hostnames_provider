@@ -1,0 +1,26 @@
+<!------------------------------------------
+		AJUDA.HTML
+		@lastmod 1/11/12
+------------------------------------------->
+{% extends 'hostnames/base_with_menu.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}
+    Adicionar Item
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="container-fluid">
+        <h3 class="page-header">Adicionar Host</h3>
+    </div>
+
+    <form action="/download/" method="post">{% csrf_token %}
+        <div id="actions" class="row">
+                <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Baixar</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+{% endblock %}

@@ -18,4 +18,5 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^', include('hostnames.urls')),
+    #url(r'^hostnames', include('hostnames.urls')),
 ]

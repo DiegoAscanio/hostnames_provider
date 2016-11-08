@@ -1,0 +1,33 @@
+<!------------------------------------------
+		@file error.html
+		@lastmod 1/11/12
+------------------------------------------->
+
+<!--
+	estende a base da página de erro
+-->
+{% extends 'hostnames/base_error.html' %}
+
+<!--
+	carrega o bootstrap
+-->
+{% load bootstrap3 %}
+
+
+<!--
+	define o título da página
+-->
+{% block title %}
+    Erro
+{% endblock %}
+
+<!--
+	início do bloco principal
+-->
+{% block main %}
+
+	<div id="main" class="container-fluid">
+        	<h3 class="page-header" align='center'>{{ mensagem }}</h3>
+    	</div>
+	
+{% endblock %}
