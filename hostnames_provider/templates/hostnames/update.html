@@ -17,7 +17,7 @@
 	define o título da página 
 -->
 {% block title %}
-    Editar Item
+Editar Item
 {% endblock %}
 
 <!--
@@ -25,37 +25,38 @@
 -->
 {% block main %}
 
-	<div id="main" class="container-fluid">
-   		<h3 class="page-header">Editar Host</h3>
- 	</div>
+<div id="main" class="container-fluid">
+	<h3 class="page-header">Editar Host</h3>
+</div>
 
-	<form action="/update/" method="post">{% csrf_token %}
-		<div class="row">
-			<div class="form-group col-md-4">
-         		<label for="hostname">Hostname</label>
-         		<input type="text" class="form-control" id="hostname" name ="hostname" value="{{host.hostname}}">
-       		</div>
-       	
-			<div class="form-group col-md-4">
-         		<label for="macadd">Endereço Mac</label>
-         		<input type="text" class="form-control" id="mac" name ="mac" value="{{host.mac_address}}">
-       		</div>
-       	
-			<div class="form-group col-md-4">
-         		<label for="ipadd">Endereço IP</label>
-         		<input type="text" class="form-control" id="ip" name ="ip" value="{{host.ip_address}}">
-       		</div>
-       
-			<input type="hidden" id="id" name="id" value="{{host.id}}">
-   		</div>
+<form action="/update/" method="post">{% csrf_token %}
+	<div class="row">
+		<div class="form-group col-md-4">
+			<label for="hostname">Hostname</label>
+			<input type="text" class="form-control" id="hostname" name ="hostname" value="{{host.hostname}}">
+		</div>
+		
+		<div class="form-group col-md-4">
+			<label for="macadd">Endereço Mac</label>
+			<input type="text" class="form-control" id="mac" name ="mac" value="{{host.mac_address}}">
+		</div>
+		
+		<div class="form-group col-md-4">
+			<label for="ipadd">Endereço IP</label>
+			<input type="text" class="form-control" id="ip" name ="ip" value="{{host.ip_address}}">
+		</div>
+		
+		<input type="hidden" id="id" name="id" value="{{host.id}}">
+	</div>
 
-   		<hr />
-   		<div id="actions" class="row">
-     		<div class="col-md-12">
-       			<button type="submit" class="btn btn-primary">Salvar</button>
-       			<a href="javascript:history.back()" class="btn btn-default">Cancelar</a>
-     		</div>
-   		</div>
- 	</form>
+	<hr />
+
+	<div id="actions" class="row">
+		<div class="col-md-12">
+			<button type="submit" class="btn btn-primary">Salvar</button>
+			<a href="/list" class="btn btn-default">Cancelar</a>
+		</div>
+	</div>
+</form>
 
 {% endblock %}

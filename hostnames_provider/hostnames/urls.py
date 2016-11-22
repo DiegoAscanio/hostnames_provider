@@ -18,6 +18,8 @@ from . import models
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^ajuda$', views.help, name='help'),
+    url(r'^sobre$', views.sobre, name='sobre'),
+    url(r'^contato$', views.contato, name='contato'),
     url(r'^perfil$', views.profile, name='profile'),
     url(r'^opcoes$', views.options, name='options'),
     url(r'^rest/search__ip__address/(?P<ip>[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})$', views.host_detail_ipaddress),

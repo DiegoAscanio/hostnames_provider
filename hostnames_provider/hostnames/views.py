@@ -1,6 +1,6 @@
 '''
         @file views.py
-        @lastmod 8/11/2016
+        @lastmod 9/11/2016
 '''
 
 #Importacoes
@@ -18,6 +18,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from hostnames.forms import ContactForm
+from django.core.mail import EmailMessage
+from django.shortcuts import redirect
+from django.template import Context
+from django.template.loader import get_template
+from django.core.mail import EmailMultiAlternatives
 
 import csv, pdb, json
 
@@ -35,6 +41,9 @@ from django.utils.six import BytesIO
 
 #Metodo padrao para erro
 def showError(request,mensagem):
+	'''
+	Retorna uma pagina de erro contendo os dados passados na mensagem
+	'''	
 	c = RequestContext (request, {
 			'mensagem' : mensagem
 		})
@@ -98,17 +107,42 @@ def host_detail_macaddress(request, mac, format=None):
         return JSONResponse(serializer.data) if (len(serializer.data) != 0) else showError(request,'ERRO: MAC INEXISTENTE!')
 
 @csrf_exempt
-def host_detail_pesquisar(request, pesquisa):
+def host_detail_pesquisar(request, pesquisa, ordem):
     '''
     Retorna um JSON com o resultado da pesquisa (Geral ou Especifica)
     '''
+  
     if request.method == 'GET':
+	if('0' in ordem):
+            
+	    if('h' in ordem):
+		ordem = 'hostname'
+	    elif('m' in ordem):
+		ordem = 'mac_address'
+	    elif('i' in ordem):
+		ordem = 'ip_address'
+	else:
+	    if('h' in ordem):
+		ordem = '-hostname'
+	    elif('m' in ordem):
+		ordem = '-mac_address'
+	    elif('i' in ordem):
+		ordem = '-ip_address'
         try:
 	    if (pesquisa != None):
                 if(len(pesquisa) == 1):
-                    host = Host.objects.filter(Q(hostname__icontains = pesquisa[0]) | Q(mac_address__icontains = pesquisa[0]) | Q(ip_address__icontains = pesquisa[0]))
+                    host = Host.objects.filter(Q(hostname__icontains = pesquisa[0]) | Q(mac_address__icontains = pesquisa[0]) | Q(ip_address__icontains = pesquisa[0])).order_by(ordem)
+		    
+		    for h in host:
+			h.hostname = h.hostname.replace(str(pesquisa[0]), "<b style='color:red'>"+str(pesquisa[0])+"</b>")
+			h.mac_address = h.mac_address.replace(str(pesquisa[0]), "<b style='color:red'>"+str(pesquisa[0])+"</b>")
+			h.ip_address = h.ip_address.replace(str(pesquisa[0]), "<b style='color:red'>"+str(pesquisa[0])+"</b>")	
             	else:
-                    host = Host.objects.filter(hostname__icontains = pesquisa[0],mac_address__icontains = pesquisa[1],ip_address__icontains = pesquisa[2])
+                    host = Host.objects.filter(hostname__icontains = pesquisa[0],mac_address__icontains = pesquisa[1],ip_address__icontains = pesquisa[2]).order_by(ordem)
+		    for h in host:
+                        h.hostname = h.hostname.replace(str(pesquisa[0]), "<b style='color:red'>"+str(pesquisa[0])+"</b>")
+			h.mac_address = h.mac_address.replace(str(pesquisa[1]), "<b style='color:red'>"+str(pesquisa[1])+"</b>")
+			h.ip_address = h.ip_address.replace(str(pesquisa[2]), "<b style='color:red'>"+str(pesquisa[2])+"</b>")
 	    else:
 		host = Host.objects.all()
         except Host.DoesNotExist:
@@ -157,14 +191,15 @@ def delete(request):
         #testa se o form e valido
         if form.is_valid():
             # pega a(s) id(s) do(s) host(s) a ser(em) excluido(s)
-            id = form.cleaned_data['id']
+            id = form.cleaned_data['ip']
+	    
             # separa os hosts pela virgula e armazena em um array (em caso de dois ou mais hosts)
             idSplit = id.split(',')
             
             # itera o array de hosts
             for i in idSplit:
                 # deleta host por host
-                h = Host.objects.filter(id=i).delete()
+                h = Host.objects.filter(ip_address=i).delete()
 
             #retorna redirecionamento para a pagina de listagem
             return HttpResponseRedirect("/list")
@@ -173,6 +208,10 @@ def delete(request):
 
 #View da tela de erro
 def error(request):
+    '''
+    View da Tela de Error: Redireciona para a Pagina de Erro, caso seja solicitado um redirecionamento para
+    ela
+    '''
     if (request.method == 'POST'): # redirecionamento padrao
         template = loader.get_template('hostnames/error.html')
         c = RequestContext (request, {})
@@ -196,7 +235,52 @@ def index(request):
         c = RequestContext (request, {})        
         return HttpResponse(template.render(c))
 
-#View do perfil
+#View do contato
+def contato(request): 
+   
+    # new logic!
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            first_name = request.POST.get('first_name', '')
+            last_name = request.POST.get('last_name', '')
+            email = request.POST.get('email', '')
+	    phone = request.POST.get('phone', '')
+	    comment = request.POST.get('comment', '')
+
+            # Email the profile with the 
+            # contact information
+            
+	    template = get_template('contact_template.txt')
+            context = Context({
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'phone': phone,
+                'comment': comment,
+            })
+            content = template.render(context)
+
+            email = EmailMessage(
+                "New contact form submission",
+                content,
+                "Your website" +'',
+                ['formularioscefetcontagem@gmail.com'],
+                headers = {'Reply-To': email }
+            )
+            #pdb.set_trace()
+            email.send()
+            return HttpResponseRedirect("/create")
+        else:
+            return HttpResponseRedirect("/list")
+
+    if request.method == 'GET':
+        return render(request, 'hostnames/contato.html', {
+            #'form': form_class,
+        })
+
+        
+#View do opcoes
 def options(request):
     template = loader.get_template('hostnames/opcoes.html')
     c = RequestContext (request, {})        
@@ -211,6 +295,12 @@ def profile(request):
 #View da ajuda
 def help(request):
     template = loader.get_template('hostnames/ajuda.html')
+    c = RequestContext (request, {})        
+    return HttpResponse(template.render(c))
+
+#View do sobre
+def sobre(request):
+    template = loader.get_template('hostnames/sobre.html')
     c = RequestContext (request, {})        
     return HttpResponse(template.render(c))
 
@@ -451,10 +541,35 @@ def retrieve(request):
 #View da pagina de listagem
 @login_required
 def list(request):
-    host_list = Host.objects.all()
     page = request.GET.get('page', 1)
-
-    paginator = Paginator(host_list, 10)
+    try:
+        pagination = request.GET.get('pagination', 10)
+    except:
+        pagination = 10
+    try:
+        ordem = request.GET['ordem']
+        if('0' in ordem):
+            if('h' in ordem):
+                host_list = Host.objects.filter().order_by('hostname')
+            if('m' in ordem):
+                host_list = Host.objects.filter().order_by('mac_address')
+            if('i' in ordem):
+                host_list = Host.objects.filter().order_by('ip_address')
+        else:
+            if('h' in ordem):
+                host_list = Host.objects.filter().order_by('-hostname')
+            if('m' in ordem):
+                host_list = Host.objects.filter().order_by('-mac_address')
+            if('i' in ordem):
+                host_list = Host.objects.filter().order_by('-ip_address')
+	    
+    except:
+        ordem = '0h'
+        host_list = Host.objects.filter().order_by('hostname')
+    if(pagination == 'todos'):
+        paginator = Paginator(host_list, len(host_list))
+    else:
+        paginator = Paginator(host_list, pagination)
     try:
         hosts = paginator.page(page)
     except PageNotAnInteger:
@@ -464,10 +579,18 @@ def list(request):
 
     #carrega o template da list
     template = loader.get_template('hostnames/list.html')
-    
+
+    if('0' in ordem):
+        proxOrdem = '1'
+    else:
+        proxOrdem = '0'
+    print(pagination)
     #solicita um contexto contendo todos os objetos do tipo Host
     c = RequestContext(request, {
-        'hosts' : hosts
+        'hosts' : hosts,
+	'ordem': ordem,
+        'proxOrdem': proxOrdem,
+        'paginacao': pagination
     })
 
     #responde com o template renderizado
@@ -490,7 +613,7 @@ def ordenaPesquisa(pesquisa):
 	
 	return pesquisaOrdenada
 
-# Cria um Array 
+# Cria um Array com os dados da pesquisa
 def separaDados(pesquisa):
 	listaDados = ['','','']
 	if(pesquisa[0] is not ''):
@@ -500,25 +623,41 @@ def separaDados(pesquisa):
 	if(pesquisa[2] is not ''):
 		listaDados[2] = pesquisa[2][3:]
 	return listaDados
-
+import operator
 # View do Resultado da Pesquisa
 def pesquisar(request):
      if request.method == 'GET':
+	try:
+            pagination = request.GET.get('pagination', 10)
+        except:
+            pagination = 10
         #carrega o template da list
 	pesquisa = request.GET['pesquisa']
-	
-	pesquisaSplit = pesquisa.split(";")
+	pesquisa = pesquisa.replace(' ', '')
 
-	if(';' not in pesquisa and '=' not in pesquisa):
+   
+        try:
+            ordem = request.GET['ordem']
+        except:
+	    ordem = '0h'
+	pesquisaSplit = pesquisa.split("|")
+
+	if('|' not in pesquisa and '=' not in pesquisa):
 		if(len(pesquisa) == 1):
-			pesquisa2 = None
+			pesquisa2 = [pesquisa]
 		else:
 			pesquisa2 = [pesquisa]
 	else:
 		pesquisa2 = ordenaPesquisa(pesquisaSplit)
-	content = host_detail_pesquisar(request, pesquisa2)
+
+
+	content = host_detail_pesquisar(request, pesquisa2, ordem)
 	stream = BytesIO(content)
 	data = JSONParser().parse(stream)
+
+        
+
+	#data = data.order_by('+hostname')
 
 	serializer = HostSerializer(data=data)
 
@@ -526,8 +665,10 @@ def pesquisar(request):
 
 	template = loader.get_template('hostnames/pesquisar.html')
     	page = request.GET.get('page', 1)
-	
-    	paginator = Paginator(data, 10)
+	if(pagination == 'todos'):
+            paginator = Paginator(data, len(data))
+        else:
+            paginator = Paginator(data, pagination)
     	try:
         	hosts = paginator.page(page)	
 	except PageNotAnInteger:
@@ -535,13 +676,23 @@ def pesquisar(request):
     	except EmptyPage:
         	hosts = paginator.page(paginator.num_pages)
 
+        if('0' in ordem):
+		proxOrdem= '1'
+		
+    	else:
+		proxOrdem = '0'
+
 	c = RequestContext (request, {
             'hosts' : hosts,
-            'pesquisa': pesquisa
+            'pesquisa': pesquisa,
+	    'ordem': ordem,
+            'proxOrdem': proxOrdem,
+	    'paginacao': pagination
         })
 
         #responde com o template renderizado
-        return HttpResponse(template.render(c))   
+        return HttpResponse(template.render(c))
+
 
 class HostList(generics.ListCreateAPIView):
     queryset = Host.objects.all()

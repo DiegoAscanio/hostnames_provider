@@ -1,6 +1,6 @@
 <!------------------------------------------
 		@file list.html
-		@lastmod 1/11/12
+		@lastmod 9/11/12
 ------------------------------------------->
 <!-- 
 	estende a base que contem o menu 
@@ -23,7 +23,7 @@
 	início do bloco de conteúdo principal 
 -->
 {% block main %}
-
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 <div id="main" class="container-fluid">
 	<div id="top" class="row">
 		<div class="col-md-1">
@@ -68,23 +68,23 @@
     				<thead>
         				<tr>
 						<th><input type="checkbox" onclick="switchCheckbox(this)" name="switchCheckbox"></th>
-            					<th>Hostname</th>
-    						<th>Endereço Mac</th>
-            					<th>Endereço IP</th>
+            					<th>Hostname<a id='ordem' href='/list?ordem={{proxOrdem}}h'><i class="fa fa-fw fa-sort"></i></a></th>
+    						<th>Endereço Mac<a id='ordem' href='/list?ordem={{proxOrdem}}m'><i class="fa fa-fw fa-sort"></i></a></th>
+            					<th>Endereço IP<a id='ordem' href='/list?ordem={{proxOrdem}}i'><i class="fa fa-fw fa-sort"></i></a></th>
             					<th class="actions">Ações</th>
          				</tr>
     				</thead>
     				<tbody>
 				{% for h in hosts %}
 				<tr>
-					<td><input type="checkbox" name="checkbox" value="{{h.id}}"></td>
+					<td><input type="checkbox" name="checkbox" value="{{h.ip_address}}"></td>
     					<td> {{ h.hostname }} </td>
     					<td> {{ h.mac_address }} </td>
 					<td> {{ h.ip_address }} </td>
     					<td class="actions">
         					<a class="btn btn-success btn-xs" href="/retrieve/?ip={{h.ip_address}}">Visualizar</a>
         					<a class="btn btn-warning btn-xs" href="/update/?ip={{h.ip_address}}">Editar</a>
-						<a class="btn btn-danger btn-xs"  href="#" onclick="pegaId('{{h.id}}')" data-toggle="modal" data-target="#delete-modal">Excluir</a>
+						<a class="btn btn-danger btn-xs"  href="#" onclick="pegaId('{{h.ip_address}}')" data-toggle="modal" data-target="#delete-modal">Excluir</a>
 					</td>
 				</tr>
         			{% endfor %}
@@ -94,11 +94,11 @@
 	</div> <!-- /#list -->
 
 	<div id="bottom" class="row">
-		<div class="col-md-6">
+		<div class="col-md-9">
 			{% if hosts.has_other_pages %}
 			<ul class="pagination">
 				{% if hosts.has_previous %}
-					<li><a href="?page={{ hosts.previous_page_number }}">&laquo;</a></li>
+					<li><a href="?page={{ hosts.previous_page_number }}&ordem={{ordem}}">&laquo;</a></li>
 				{% else %}
 					<li class="disabled"><span>&laquo;</span></li>
 				{% endif %}	
@@ -106,17 +106,51 @@
 					{% if hosts.number == i %}
 						<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
 					{% else %}
-						<li><a href="?page={{ i }}">{{ i }}</a></li>
+						<li><a href="?page={{ i }}&ordem={{ordem}}">{{ i }}</a></li>
 					{% endif %}
 				{% endfor %}
 				{% if hosts.has_next %}
-					<li><a href="?page={{ hosts.next_page_number }}">&raquo;</a></li>
+					<li><a href="?page={{ hosts.next_page_number }}&ordem={{ordem}}">&raquo;</a></li>
 				{% else %}
 					<li class="disabled"><span>&raquo;</span></li>
 				{% endif %}
 			</ul>
 			{% endif %}
 		</div>
+                <div class="col-md-3">
+			<select id='paginacao' onchange='pagina()'>
+			  	{% if paginacao == '10' %}
+					<option class='paginacaoOpc' value='10' selected>10</option>
+				{% else %}
+					<option class='paginacaoOpc' value='10'>10</option>
+				{% endif %}
+
+				{% if paginacao == '25' %}
+					<option class='paginacaoOpc' value='25' selected>25</option>
+				{% else %}
+					<option class='paginacaoOpc' value='25'>25</option>
+				{% endif %}
+
+				{% if paginacao == '50' %}
+					<option class='paginacaoOpc' value='50' selected>50</option>
+				{% else %}
+					<option class='paginacaoOpc' value='50'>50</option>
+				{% endif %}
+
+				{% if paginacao == '100' %}
+					<option class='paginacaoOpc' value='100' selected>100</option>
+				{% else %}
+					<option class='paginacaoOpc' value='100'>100</option>
+				{% endif %}
+
+				{% if paginacao == 'todos' %}
+					<option class='paginacaoOpc' value='todos' selected>Todos</option>
+				{% else %}
+					<option class='paginacaoOpc' value='todos'>Todos</option>
+				{% endif %}
+			</select>
+			<p>Hosts por Página</p>
+                </div>
 	</div> <!-- /#bottom -->
 </div>  <!-- /#main -->
 
@@ -131,7 +165,7 @@
             		<div class="modal-body">Deseja realmente excluir este host? </div>
             			<div class="modal-footer">
                 			<form action="/delete/" id='deleteForm' method="post">{% csrf_token %}
-						<input type='hidden' name='id' id='idHost' value=''>
+						<input type='hidden' name='ip' id='idHost' value=''>
 						<button type="submit" class="btn btn-primary">Sim</button>
 		        			<button type="button" class="btn btn-default" data-dismiss="modal">N&atilde;o</button>
 					</form>
@@ -151,7 +185,7 @@
             		<div class="modal-body" id="modal-body-hosts">Deseja realmente excluir estes hosts?</div>
             			<div class="modal-footer" id="modal-footer-hosts">
                 			<form action="/delete/" id='deleteForm' method="post">{% csrf_token %}
-						<input type='hidden' name='id' id='idHosts' value=''>
+						<input type='hidden' name='ip' id='idHosts' value=''>
 						<button type="submit" class="btn btn-primary">Sim</button>
 		        			<button type="button" class="btn btn-default" data-dismiss="modal">N&atilde;o</button>
 					</form>
@@ -163,7 +197,14 @@
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
+<!--
+	CONSIDERAR O ID COMO IP_ADDRESS
+-->
 <script type="text/javascript">
+	function pagina(){
+		var paginacao = document.getElementById('paginacao');
+		window.location = "/list?pagination="+paginacao.value;
+	}
 	function pegaId(id){
 		var idHost = document.getElementById('idHost').value = id;
 	}
@@ -179,6 +220,7 @@
 		 	}	
      		}
 	}
+
 	function deletaHosts(){
 		var hosts = pegaCheckbox();
 		var modalBody = document.getElementById('modal-body-hosts');
@@ -189,24 +231,25 @@
 		} else {
 			modalBody.innerHTML = "Deseja realmente excluir estes hosts?";
 			modalFooter.innerHTML = "<form action='/delete/' id='deleteForm' method='post'>{% csrf_token %}"+
-						"<input type='hidden' name='id' id='idHosts' value=''>"+
+						"<input type='hidden' name='ip' id='idHosts' value=''>"+
 						"<button type='submit' class='btn btn-primary'>Sim</button>"+
 		        			"<button type='button' class='btn btn-default' data-dismiss='modal'>N&atilde;o</button>"+
 					"</form>";
 		}
 		var idHost = document.getElementById('idHosts').value = hosts;
 	}
+
 	function pegaCheckbox() {
 		var checkboxes = document.getElementsByName("checkbox");
 	  	var checkboxesChecked = [];
-	  	// loop over them all
+	  	// itera enquanto houver checkboxes
 	  	for (var i=0; i<checkboxes.length; i++) {
-	     		// And stick the checked ones onto an array...
+	     		// adiciona os checkboxes verificados no array
 	     		if (checkboxes[i].checked) {
 				checkboxesChecked.push(checkboxes[i].value);
 	     		}
   		}
-	  	// Return the array if it is non-empty, or null
+	  	// retorna o array com seu conteudo ou então retorna nulo se estiver vazio
 	  	return checkboxesChecked.length > 0 ? checkboxesChecked : null;
 	}
 </script>

@@ -50,4 +50,12 @@ class DeleteForm(forms.Form):
     '''
     Classe de Exclusao de Host: Usada na validacao de um Host a ser excluido
     '''
-    id = forms.CharField(label='id')
+    ip = forms.CharField(label='ip_address')
+
+#Form do Contato
+class ContactForm(forms.Form):
+    first_name = forms.CharField(label='first_name')
+    last_name = forms.CharField(label='last_name')
+    email = forms.EmailField(label='email')
+    phone = forms.CharField(label='phone')
+    comment = forms.CharField(label='comment')

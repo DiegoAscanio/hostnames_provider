@@ -1,11 +1,12 @@
 '''
         @file models.py
-        @lastmod 8/11/2016
+        @lastmod 9/11/2016
 '''
 
 # Importacoes
 from django.db import models
 import django
+from django import forms
 
 # Area de criacao de classes
 
@@ -16,9 +17,12 @@ class Host(models.Model):
     '''
     hostname = models.CharField(max_length=15)
     mac_address = models.CharField(max_length=17)
-    ip_address = models.CharField(unique=True, max_length=15)
+    ip_address = models.CharField(primary_key=True, unique=True, max_length=15)
     def __str__(self):
         return self.hostname+'|'+self.mac_address+'|'+self.ip_address
+
+
+
 
 
 
